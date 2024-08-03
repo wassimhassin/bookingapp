@@ -5,12 +5,10 @@ pipeline {
         KUBECONFIG_CREDENTIALS = 'kubecred'
     }
     stages {
-        // Uncomment this stage if you need to clone the repository
-        // stage('Clone Repository') {
-        //     steps {
-        //         sh 'git clone https://github.com/wassim1920/Booking'
-        //     }
-        // }
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/wassimhassin/bookingapp.git'
+            }
         stage('Build and Package') {
             steps {
                 script {
@@ -21,11 +19,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                        sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push wassimhassin/booking:latest
-                        """
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        sh 'docker push wassimhassin/booking:latest'
                     }
                 }
             }
@@ -45,4 +40,5 @@ pipeline {
             echo 'Pipeline finished.'
         }
     }
+}
 }
