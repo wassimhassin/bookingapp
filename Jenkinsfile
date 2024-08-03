@@ -9,6 +9,7 @@ pipeline {
             steps {
                 git 'https://github.com/wassimhassin/bookingapp.git'
             }
+        }
         stage('Build and Package') {
             steps {
                 script {
@@ -40,5 +41,4 @@ pipeline {
             echo 'Pipeline finished.'
         }
     }
-}
 }
