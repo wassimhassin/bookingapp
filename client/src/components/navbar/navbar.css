@@ -1,0 +1,92 @@
+.navbar{
+  height: 70px;
+  background: rgb(9,29,63);
+background: linear-gradient(90deg, rgba(9,29,63,1) 0%, rgba(4,138,152,1) 25%, rgba(114,62,137,1) 110%);
+  display: flex;
+  justify-content: center;
+}
+
+
+.navContainer{
+  width: 100%;
+  max-width: 1024px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.logo{
+  font-weight: 500;
+  font-size: 25px;
+  color: white;
+  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.navButton{
+  margin-left: 20px;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.navButton:hover{
+  background-color: rgb(211, 211, 211);
+}
+.User{
+  display: flex;
+  flex-direction:row-reverse;
+  /* position: relative;
+  right: 1%;
+  padding-top: 15px;
+  gap: 10px; */
+justify-content: center;
+align-items: center;
+padding-top: 10px;
+}
+
+.UserName{
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  position: relative;
+  right: 10px;
+  font-style: unset;
+}
+.UserName:hover{
+color: #b6d4ff;
+}
+/* .iconlogin{
+  color: white;
+  position: relative;
+  left: 20px;
+  font-size: 18px;
+} */
+/* .iconlogin:hover{
+  color: rgb(195, 195, 195);
+} */
+.userImg{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: relative;
+    right: 10px;
+}
+.dropdown{
+  position: relative;
+  left: 80%;
+  cursor: pointer;
+}
+.dropdown-item{
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+.dropdown-item:hover{
+color: #74a5ea;
+}

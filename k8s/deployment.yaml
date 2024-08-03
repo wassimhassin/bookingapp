@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-app
+  labels:
+    app: booking-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: booking-app
+  template:
+    metadata:
+      labels:
+        app: booking-app
+    spec:
+      containers:
+        - name: booking-app
+          image: wassimhassin/booking:latest 
+          ports:
+            - containerPort: 3000
+          # Command to start the backend server
+          command: ["node", "./api/index.js"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-service
+  labels:
+    app: booking-app
+spec:
+  selector:
+    app: booking-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
