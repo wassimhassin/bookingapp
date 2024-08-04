@@ -22,7 +22,7 @@ import { syncDatabase } from "./models/scrap/Scraping_Flight.js";
 const app = express()
 dotenv.config()
 //connect to mongo db
-    console.log('-------------MongoDB URI:', process.env.MONGO);
+
 
 
 const sequelize = new Sequelize('booking_scraping', 'root', null, {
@@ -30,11 +30,11 @@ const sequelize = new Sequelize('booking_scraping', 'root', null, {
     dialect: 'mysql'
   }); 
 
-    console.log('-------------MongoDB URI:', process.env.MONGO);
+
 
 const connect = async ()=>{
 try{
-    console.log('-------------MongoDB URI:', process.env.MONGO);
+
     await mongoose.connect(process.env.MONGO);
     console.log("connected to mongodb")
     /*await sequelize.authenticate();
@@ -84,6 +84,6 @@ app.use((err, req, res ,next)=>{
 app.listen(8000 , ()=>{
     connect()
     console.log("connected .")
-   console.log('-------------MongoDB URI:', process.env.MONGO);
+
 
 })
