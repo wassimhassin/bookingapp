@@ -30,7 +30,7 @@ const sequelize = new Sequelize('booking_scraping', 'root', null, {
 
 
 const connect = async ()=>{
-try{
+try{  
     await mongoose.connect(process.env.MONGO);
     console.log("connected to mongodb")
     /*await sequelize.authenticate();
