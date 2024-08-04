@@ -22,15 +22,19 @@ import { syncDatabase } from "./models/scrap/Scraping_Flight.js";
 const app = express()
 dotenv.config()
 //connect to mongo db
+    console.log('-------------MongoDB URI:', process.env.MONGODB_URI);
+
 
 const sequelize = new Sequelize('booking_scraping', 'root', null, {
     host: '127.0.0.1',
     dialect: 'mysql'
   }); 
 
+    console.log('-------------MongoDB URI:', process.env.MONGODB_URI);
 
 const connect = async ()=>{
 try{
+    console.log('-------------MongoDB URI:', process.env.MONGODB_URI);
     await mongoose.connect(process.env.MONGO);
     console.log("connected to mongodb")
     /*await sequelize.authenticate();
