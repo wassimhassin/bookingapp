@@ -20,7 +20,7 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: MONGODB_URI
+            - name: MONGO
               value: "mongodb+srv://wassim:19201920**@cluster0.zpr2cj0.mongodb.net/project?retryWrites=true&w=majority"
           # Command to start the backend server
           command: ["node", "./api/index.js"]
