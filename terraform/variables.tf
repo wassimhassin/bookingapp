@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "key_name" {
   description = "The name of the SSH key pair"
-  default     = "booking-key-pair"
+  default     = "booking_app_key-pair"
 }
 
 variable "instance_type" {

@@ -1,4 +1,4 @@
-resource "aws_key_pair" "booking_key-pair" {
-  key_name   = "booking-key-pair"
-  public_key = file("C:\\Users\\LENOVO\\.ssh\\booking-key-pair.pub")
+resource "aws_key_pair" "booking_app_key-pair" {
+  key_name   = "booking_app_key-pair"
+  public_key = file("~/.ssh/key-pair.pub")
 }
