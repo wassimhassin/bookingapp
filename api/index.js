@@ -31,7 +31,7 @@ const sequelize = new Sequelize('booking_scraping', 'root', null, {
 
 const connect = async ()=>{
 try{
-    await mongoose.connect("mongodb+srv://wassim:19201920**@cluster0.zpr2cj0.mongodb.net/project?retryWrites=true&w=majority");
+    await mongoose.connect(process.env.MONGO);
     console.log("connected to mongodb")
     /*await sequelize.authenticate();
     await syncDatabase();
