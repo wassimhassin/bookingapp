@@ -33,12 +33,7 @@ const sequelize = new Sequelize('booking_scraping', 'root', null, {
 
 
 const connect = async ()=>{
-<<<<<<< HEAD
 try{  
-=======
-try{
-
->>>>>>> origin/master
     await mongoose.connect(process.env.MONGO);
     console.log("connected to mongodb")
     /*await sequelize.authenticate();
@@ -88,11 +83,4 @@ app.use((err, req, res ,next)=>{
 app.listen(8000 , ()=>{
     connect()
     console.log("connected .")
-<<<<<<< HEAD
-    console.log('-------------MongoDB URI:', process.env.MONGO)
 })
-=======
-
-
-})
->>>>>>> origin/master
