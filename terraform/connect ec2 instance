@@ -1,1 +1,1 @@
-ssh -i ~/.ssh/key-pair ec2-user@35.180.119.251
+ssh -i ~/.ssh/key-pair ec2-user@13.39.207.45
