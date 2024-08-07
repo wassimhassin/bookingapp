@@ -14,6 +14,9 @@ gpgcheck=1
 enabled=1
 gpgkey=https://pgp.mongodb.com/server-7.0.asc" | sudo tee /etc/yum.repos.d/mongodb-org-7.0.repo
 
+# Update package index
+sudo yum update -y
+
 # Install MongoDB
 sudo yum install -y mongodb-org
 
