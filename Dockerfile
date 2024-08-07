@@ -29,7 +29,7 @@ COPY ./api ./
 COPY --from=frontend /Booking/client/build ./public
 
 # Expose the port that the app runs on
-EXPOSE 3000
+EXPOSE 8000
 
 # Command to run the backend
 CMD ["node", "index.js"]

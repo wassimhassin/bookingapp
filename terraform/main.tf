@@ -80,7 +80,7 @@ resource "aws_instance" "booking_app" {
     docker pull wassimhassin/booking:latest
 
     # Run the new container
-    docker run -d -p 3000:3000 --name booking-app wassimhassin/booking:latest
+    docker run -d -p 8000:8000 --name booking-app wassimhassin/booking:latest
 
     # Check the logs of the newly started container
     echo "Checking logs of the 'booking-app' container..."
@@ -120,6 +120,13 @@ resource "aws_security_group" "web_sg" {
   ingress {
     from_port   = 27017
     to_port     = 27017
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
