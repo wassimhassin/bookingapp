@@ -80,7 +80,7 @@ resource "aws_instance" "booking_app" {
     docker pull wassimhassin/booking:latest
 
     # Run the new container
-    docker run -d -p 3000:3000 --name booking-app wassimhassin/booking:latest
+    docker run -d -p 3000:3000 --name booking-app -e MONGO = mongodb+srv://wassim:19201920**@cluster0.zpr2cj0.mongodb.net/project?retryWrites=true&w=majority wassimhassin/booking:latest
 
     # Check the logs of the newly started container
     echo "Checking logs of the 'booking-app' container..."
