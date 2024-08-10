@@ -31,7 +31,7 @@ COPY ./api ./
 COPY --from=frontend /Booking/client ./
 
 # Expose the ports for both frontend (3000) and backend (8000)
-EXPOSE 3000 8000
+EXPOSE 3000
 
 # Command to run both frontend and backend concurrently
 CMD ["concurrently", "npm start /Booking/client", "npm start /Booking/api"]
