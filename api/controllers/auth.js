@@ -1,24 +1,23 @@
-import User from "../models/User.js"
-import bcrypt from "bcryptjs"
-import jwt  from "jsonwebtoken";
-import {createError} from "../utils/error.js"
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { createError } from "../utils/error.js";
 // import  cloudinary  from "../utils/cloudinary.js";
 
-
-export const registre = async (req,res,next)=>{
-  try{
+export const registre = async (req, res, next) => {
+  try {
     //to hide the password
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
     const newUser = new User({
-        ...req.body,
-        password: hash,
-    })
-    await newUser.save()
-    res.status(200).send("user has been created")
-  }catch(err){
-    next(err)
+      ...req.body,
+      password: hash,
+    });
+    await newUser.save();
+    res.status(200).send("user has been created");
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -36,7 +35,7 @@ export const login = async (req, res, next) => {
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT ,
+      process.env.JWT
       // {expiresIn : '24h'}
     );
     const { password, isAdmin, ...otherDetails } = user._doc;
