@@ -32,7 +32,7 @@ COPY ./api ./
 COPY --from=frontend /Booking/client/build ./public
 
 # Expose the ports for both frontend (3000) and backend (8000)
-EXPOSE 3000 8000
+EXPOSE 3000
 
 # Copy the pm2 ecosystem configuration file
 COPY ecosystem.config.js ./
