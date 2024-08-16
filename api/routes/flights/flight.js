@@ -7,6 +7,7 @@ import {
   getLowerPriceFlight,
   updateFlightById,
 } from "../../controllers/flight/flight.js";
+import { deleteAll } from "../../controllers/scarping_flight/scraping_flight.js";
 
 
 
@@ -18,6 +19,7 @@ router.get("/getFlightById", getFlightById);
 router.get("/getLowerPriceFlight", getLowerPriceFlight);
 router.get("/updateFlightById", updateFlightById);
 router.delete("/deleteFlight", deleteFlightById);
+router.delete("/deleteallFlight", deleteAll);
 
 
 

@@ -1,167 +1,168 @@
 ---
-- hosts: web
+- name: Setup EC2 Instance
+  hosts: all
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  # Use system Python for facts gathering
   tasks:
-    - name: Update all packages
-      yum:
-        name: "*"
-        state: latest
+    - name: Remove Previous Attempted Installation
+      command: rm -rf /usr/src/Python-3.9.13
 
-    - name: Check if Docker is installed
-      command: which docker
-      register: docker_installed
-      failed_when: false
-
-    - name: Install Docker if not present
+    - name: Install Prerequisites
       yum:
-        name: docker
+        name:
+          - gcc
+          - openssl-devel
+          - bzip2-devel
+          - libffi-devel
+          - wget
         state: present
-      when: docker_installed.rc != 0
 
-    - name: Verify Docker installation
-      command: docker --version
-      register: docker_version
+    - name: Download Python source
+      get_url:
+        url: https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tgz
+        dest: /usr/src/Python-3.9.13.tgz
+
+    - name: Extract Python source
+      unarchive:
+        src: /usr/src/Python-3.9.13.tgz
+        dest: /usr/src/
+        remote_src: yes
+
+    - name: Configure Python
+      command: ./configure --with-openssl=/usr/include/openssl
+      args:
+        chdir: /usr/src/Python-3.9.13
+
+    - name: Build Python
+      command: make
+      args:
+        chdir: /usr/src/Python-3.9.13
+
+    - name: Install Python
+      command: make altinstall
+      args:
+        chdir: /usr/src/Python-3.9.13
+      notify:
+        - Check Python Installation
+
+    - name: Verify Python 3.9 Installation
+      command: /usr/local/bin/python3.9 --version
+      register: python_version
+      ignore_errors: yes
+
+    - name: Debug Python Installation
+      debug:
+        msg: "Python 3.9 Installation Path: {{ python_version.stderr }}"
+      when: python_version.failed
+
+    - name: Update PATH
+      lineinfile:
+        path: ~/.bashrc
+        line: 'export PATH="/usr/local/bin:$PATH"'
+        create: yes
+
+    - name: Reload bashrc
+      command: source ~/.bashrc
       changed_when: false
 
-    - name: Display Docker version
-      debug:
-        msg: "Docker version: {{ docker_version.stdout }}"
+    - name: Install pip for Python 3.9
+      command: /usr/local/bin/python3.9 -m ensurepip
 
-    - name: Check Docker service status
-      command: systemctl is-active docker
-      register: docker_service_status
-      failed_when: false
+    - name: Upgrade pip for Python 3.9
+      command: /usr/local/bin/pip3.9 install --upgrade pip
 
-    - name: Start Docker service if not running
+    - name: Install/Upgrade requests library for Python 3.9
+      command: /usr/local/bin/pip3.9 install requests
+
+    - name: Create MongoDB repository
+      copy:
+        content: |
+          [mongodb-org-7.0]
+          name=MongoDB Repository
+          baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/7.0/x86_64/
+          gpgcheck=1
+          enabled=1
+          gpgkey=https://pgp.mongodb.com/server-7.0.asc
+        dest: /etc/yum.repos.d/mongodb-org-7.0.repo
+      notify: Update package index
+
+    - name: Install MongoDB
+      yum:
+        name: mongodb-org
+        state: present
+
+    - name: Start MongoDB service
+      systemd:
+        name: mongod
+        state: started
+        enabled: yes
+
+    - name: Install Docker if not installed
+      package:
+        name: docker
+        state: present
+
+    - name: Start Docker service
       systemd:
         name: docker
         state: started
         enabled: yes
-      when: docker_service_status.stdout != 'active'
 
-    - name: Check if ec2-user is in docker group
-      command: groups ec2-user
-      register: ec2_user_groups
+    - name: Create docker group if it doesn't exist
+      group:
+        name: docker
+        state: present
 
-    - name: Add ec2-user to docker group
+    - name: Add ec2-user to the docker group
       user:
         name: ec2-user
         groups: docker
         append: yes
-      when: "'docker' not in ec2_user_groups.stdout"
 
-    - name: Remove any container running on port 3000
-      shell: |
-        CONTAINERS=$(docker ps -q --filter "publish=3000")
-        if [ -n "$CONTAINERS" ]; then
-          docker rm -f $CONTAINERS
-        fi
+    - name: Remove existing container 'booking-app' if exists
+      command: docker rm -f booking-app
+      ignore_errors: yes
 
-    - name: Pull Docker image
-      command: docker pull wassimhassin/booking:latest
+    - name: Docker Hub login
+      command: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      ignore_errors: yes
 
-    - name: Check if PostgreSQL client is installed
-      command: which psql
-      register: psql_installed
-      failed_when: false
-
-    - name: Install PostgreSQL client if not present
-      yum:
-        name: postgresql
-        state: present
-      when: psql_installed.rc != 0
-
-    - name: Verify PostgreSQL client installation
-      command: psql --version
-      register: psql_version
-      failed_when: false
-
-    - name: Display psql version
-      debug:
-        msg: "psql version: {{ psql_version.stdout }}"
-
-    - name: Verify PostgreSQL database exists and create if not
-      shell: |
-        PGPASSWORD='jegojego' psql -h pfe.cvio8aq0wi83.eu-west-3.rds.amazonaws.com -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'pfe'" | grep -q 1 || 
-        PGPASSWORD='jegojego' psql -h pfe.cvio8aq0wi83.eu-west-3.rds.amazonaws.com -U postgres -c "CREATE DATABASE pfe"
-      become: yes
+    - name: Pull Docker image from Docker Hub
+      docker_image:
+        name: wassimhassin/booking
+        tag: latest
+        source: pull
 
     - name: Run Docker container
-      command: docker run -d -p 4444:4444 jegoniseghiloufi/pfe:latest
+      docker_container:
+        name: booking-app
+        image: wassimhassin/booking:latest
+        state: started
+        published_ports:
+          - "8000:8000"
 
-    - name: Get Docker container ID
-      command: docker ps -q --filter ancestor=jegoniseghiloufi/pfe:latest
-      register: container_id
+    - name: Check logs of the 'booking-app' container
+      command: docker logs booking-app
+      register: container_logs
+      ignore_errors: yes
 
-    - name: Display Docker logs
-      command: docker logs {{ container_id.stdout }}
+    - name: Display logs of 'booking-app'
+      debug:
+        msg: "{{ container_logs.stdout }}"
 
-    - name: Pull Elasticsearch Docker image
-      command: docker pull docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+  handlers:
+    - name: Check Python Installation
+      command: ls -l /usr/local/bin/python3.9
+      register: python_check
+      ignore_errors: yes
 
-    - name: Pull Logstash Docker image
-      command: docker pull docker.elastic.co/logstash/logstash:7.9.3
+    - name: Debug Python Installation
+      debug:
+        msg: "Python 3.9 Installation Check: {{ python_check.stdout }}"
+      when: python_check.failed
 
-    - name: Pull Kibana Docker image
-      command: docker pull docker.elastic.co/kibana/kibana:7.9.3
-
-    - name: Check if Elasticsearch is running and start if not
-      shell: |
-        if docker ps | grep -w elasticsearch; then
-          echo "Elasticsearch is running";
-        elif docker ps -a | grep -w elasticsearch; then
-          docker start elasticsearch;
-          echo "Elasticsearch started";
-        else
-          docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.9.3;
-          echo "Elasticsearch container created and started";
-        fi
-
-    - name: Check if Kibana is running and start if not
-      shell: |
-        if docker ps | grep -w kibana; then
-          echo "Kibana is running";
-        elif docker ps -a | grep -w kibana; then
-          docker start kibana;
-          echo "Kibana started";
-        else
-          docker run -d --name kibana -p 5601:5601 --link elasticsearch:elasticsearch docker.elastic.co/kibana/kibana:7.9.3;
-          echo "Kibana container created and started";
-        fi
-
-    - name: Upload Logstash configuration
-      copy:
-        src: ~/Desktop/MyFiles/Projects/PFEProject/logstash/logstash.conf
-        dest: /home/ec2-user/logstash.conf
-
-    - name: Check if Logstash is running and start if not
-      shell: |
-        if docker ps | grep -w logstash; then
-          echo "Logstash is running";
-        elif docker ps -a | grep -w logstash; then
-          docker start logstash;
-          echo "Logstash started";
-        else
-          docker run -d --name logstash -v /home/ec2-user/logstash.conf:/usr/share/logstash/pipeline/logstash.conf -p 5044:5044 docker.elastic.co/logstash/logstash:7.9.3;
-          echo "Logstash container created and started";
-        fi
-
-    - name: Check if Elasticsearch is running
-      shell: |
-        if docker ps | grep elasticsearch; then
-          echo "Elasticsearch is running";
-        else
-          echo "Elasticsearch failed to start";
-          echo "Elasticsearch logs:";
-          docker logs $(docker ps -aq --filter "name=elasticsearch");
-          exit 1;
-        fi
-
-    - name: Check if Kibana is running
-      shell: |
-        if docker ps | grep kibana; then
-          echo "Kibana is running";
-        else
-          echo "Kibana failed to start";
-          exit 1;
-        fi
+    - name: Update package index
+      yum:
+        name: '*'
+        state: latest

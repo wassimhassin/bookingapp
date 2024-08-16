@@ -1,2 +1,2 @@
 [web]
-51.44.6.18 ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/key-pair
+13.39.138.95 ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/key-pair

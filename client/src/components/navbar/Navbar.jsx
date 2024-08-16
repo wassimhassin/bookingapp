@@ -143,14 +143,14 @@ const Navbar = () => {
               Login/Signup
             </button>
 
-            <div className="flex gap-1 flex-row-reverse">
+            <div className="flex items-center gap-1 flex-row-reverse">
               <form className="md:w-[70px] cursor-pointer">
                 <label htmlFor="countries" className="sr-only">
                   {t("language")}
                 </label>
                 <select
                   id="countries"
-                  className="cursor-pointer bg-gray-50 border border-transparent-300 text-gray-900 text-[12px] rounded-[10px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="w-[70px] cursor-pointer bg-gray-50 border border-transparent-300 text-gray-900 text-[12px] rounded-[10px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   onChange={handleLanguageChange}
                   defaultValue={i18n.language}
                 >

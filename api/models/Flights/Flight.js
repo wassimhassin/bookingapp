@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 const FlightSchema = new mongoose.Schema(
   {
+    logo:{
+      type: String,
+    },
     flightNumber: {
       type: String,
     },
@@ -27,7 +30,7 @@ const FlightSchema = new mongoose.Schema(
       type: String,
     },
     price: {
-      type: Number,
+      type: String,
     },
     seatsAvailable: {
       type: Number,

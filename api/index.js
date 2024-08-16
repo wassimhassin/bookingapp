@@ -14,6 +14,8 @@ import flightRoute from "./routes/flights/flight.js"
 import bookingFlightRoute from "./routes/flights/bookingFlight.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path"
+import { fileURLToPath } from 'url';
 import { syncDatabase } from "./models/scrap/Scraping_Flight.js";
 
 
@@ -75,6 +77,17 @@ app.use((err, req, res ,next)=>{
         message : errorMessage,
         stack : err.stack,
     });
+});
+
+// Define __dirname and __filename in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
 // app.get("/", (req,res)=>{

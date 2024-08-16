@@ -20,7 +20,7 @@ export const createAirLineSQL = async (req, res, next) => {
   try {
     // Replace with your actual HTML content or fetch it from a URL
     const htmlContent = await axios.get(
-      "https://booking.kayak.com/flights/TUN-CAI/2024-08-31/2024-09-07?sort=price_a"
+      "https://booking.kayak.com/flights/TUN-PAR/2024-09-11/2024-09-18?sort=price_a&attempt=1&lastms=1723486618129"
     ); // Update with your URL
     const dom = new JSDOM(htmlContent.data);
     const document = dom.window.document;
@@ -50,25 +50,47 @@ export const createAirLineSQL = async (req, res, next) => {
         .querySelector(".col-field.stops .bottom.stops")
         .textContent.trim();
 
+      // Extract price
+      const priceElement = flightElement.querySelector(
+        ".col-price .price-text"
+      );
+      const price = priceElement
+        ? parseFloat(
+            priceElement.textContent.trim().replace("$", "").replace(",", "")
+          )
+        : null;
+
+      // Extract logo
+      const logoElement = flightElement.querySelector(".col-field.logo img");
+      const logo = logoElement ? logoElement.src : null;
+
       flights.push({
-        flightNumber: "", 
-        airlineId: carrier, 
-        originAirportId: departAirport, 
-        destinationAirportId: arrivalAirport, 
+        logo: logo,
+        flightNumber: "",
+        airlineId: carrier,
+        originAirportId: departAirport,
+        destinationAirportId: arrivalAirport,
         departureTime: departTime,
         arrivalTime: arrivalTime,
         duration: duration,
-        price: 0,
+        price: price,
         seatsAvailable: 0,
       });
     });
-
-882029549904
     await Flight.insertMany(flights);
-    await Scaping_Airline.bulkCreate(flights);
+    // await Scaping_Airline.bulkCreate(flights);
 
     return res.status(200).json(flights);
   } catch (error) {
     return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteAll = async (req, res) => {
+  try {
+    await Flight.deleteMany(req.params.flight);
+    res.status(200).json("All Flights have been deleted");
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

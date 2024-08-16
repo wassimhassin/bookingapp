@@ -11,19 +11,34 @@ import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.css";
 import { DateRange } from "react-date-range";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const Header = ({ type }) => {
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const [flights, setFlights] = useState(true);
   const [stays, setStays] = useState(false);
+
+  const calendarRef = useRef(null);
+
+  const handleClickOutside = (event) => {
+    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+      setOpenDate(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const [destination, setDestination] = useState("");
   const [openDate, setOpenDate] = useState(false);
@@ -75,7 +90,9 @@ const Header = ({ type }) => {
     <div className="header text-[white] flex justify-center relative h-[40vh] ">
       <div
         className={
-          type === "list" ? "w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl listMode" : "w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl"
+          type === "list"
+            ? "w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl listMode"
+            : "w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl"
         }
       >
         <motion.div
@@ -108,7 +125,7 @@ const Header = ({ type }) => {
               transition={{ duration: 0.5 }}
               className="md:flex text-[30px] sm:text-[40px] md:text-[50px] lg:text-[60px] xl:text-[70px]"
             >
-              {t('headerTitle')}
+              {t("headerTitle")}
             </motion.h1>
           )}
           <motion.p
@@ -117,188 +134,185 @@ const Header = ({ type }) => {
             transition={{ duration: 1 }}
             className="mx-0 my-2.5 sm:mx-2 sm:my-3 md:mx-4 md:my-5 lg:mx-6 lg:my-6 xl:mx-8 xl:my-8"
           >
-           {t('headerDesc')}
+            {t("headerDesc")}
           </motion.p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="md:flex justify-center items-center gap-2"
-        >
+        <div>
           <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="flex items-center gap-2.5 cursor-pointer border bg-[white] text-[black] font-semibold text-[13px] p-[5px] rounded-[15px] border-solid border-[white]  
-            text-[#048a98] font-medium text-[13px] p-[5px] rounded-[15px] border-2 border-solid border-[gray]
-    sm:text-[14px] sm:p-[6px] sm:rounded-[20px]
-    md:text-[15px] md:p-[7px] md:rounded-[25px]
-    lg:text-[16px] lg:p-[8px] lg:rounded-[30px]
-    xl:text-[17px] xl:p-[9px] xl:rounded-[35px]
-    
-            "
-            onClick={StaysSearch}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center items-center gap-3"
           >
-            <FontAwesomeIcon icon={faBed} />
-            <span>Stays</span>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex items-center gap-2.5 cursor-pointer border bg-[white] text-[black] font-semibold text-[13px] p-[5px] rounded-[15px] border-solid border-[white]  
+            text-[#048a98] font-medium text-[13px] p-[5px] rounded-[15px] border-2 border-solid border-[gray]"
+              onClick={StaysSearch}
+            >
+              <FontAwesomeIcon icon={faBed} />
+              <span>Stays</span>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className=" items-center gap-2.5 text-[14px] p-[6px] rounded-[20px] cursor-pointer"
+              onClick={FlightSearch}
+            >
+              <Link to="http://localhost:3000/flight">
+                <FontAwesomeIcon icon={faPlane} className="px-1" />
+                <span>Flights</span>
+              </Link>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className=" md:text-[15px] md:p-[7px] md:rounded-[25px] cursor-pointer"
+            >
+              <FontAwesomeIcon className="px-1" icon={faCar} />
+              <span>Car</span>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex items-center text-[15px] p-[7px] rounded-[25px] cursor-pointer"
+            >
+              <FontAwesomeIcon className="px-1" icon={faTaxi} />
+              <span>Airport taxis</span>
+            </motion.div>
           </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="    sm:text-[14px] sm:p-[6px] sm:rounded-[20px] cursor-pointer "
-            onClick={FlightSearch}
-          >
-            <Link to="http://localhost:3000/flight">
-            <FontAwesomeIcon icon={faPlane} />
-            <span >Flights</span>
-            </Link>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="    md:text-[15px] md:p-[7px] md:rounded-[25px] cursor-pointer "
-          >
-            <FontAwesomeIcon icon={faCar} />
-            <span>Car</span>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="lg:text-[16px] lg:p-[8px] lg:rounded-[30px] cursor-pointer "
-          >
-            <FontAwesomeIcon icon={faBed} />
-            <span>Package</span>
-          </motion.div>
-          {/* <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="    xl:text-[17px] xl:p-[9px] xl:rounded-[35px]"
-          >
-            <FontAwesomeIcon icon={faTaxi} />
-            <span>Airport taxis</span>
-          </motion.div> */}
-        </motion.div>
+        </div>
         {type !== "list" && (
           <>
             {flights && (
-             <div className="md:relative md:left-[40%] h-auto bg-white flex flex-wrap gap-x-[5px] gap-y-0 mx-auto md:ml-[calc(50% - 40vw + 15px)] md:transform md:-translate-x-1/2 w-full max-w-screen-lg shadow-[-1px_5px_5px_0px_rgba(206,205,205,0.75)] px-2 py-3 rounded-[5px] border-none md:px-4 lg:px-6">
-             <div className="flex items-center gap-2.5 w-full md:w-auto">
-               <input
-                 type="text"
-                 placeholder="Where are you going ?"
-                 className="border-[2px] border-solid border-gray-400 p-2 rounded-[10px] w-full md:w-auto"
-                 style={{ color: "black" }}
-                 onChange={(e) => setDestination(e.target.value)}
-               />
-             </div>
-             <div className="flex items-center gap-2.5 w-full md:w-auto">
-               <input
-                 type="text"
-                 placeholder="Where To go ?"
-                 className="border-[2px] border-solid border-gray-400 p-2 rounded-[10px] w-full md:w-auto"
-                 style={{ color: "black" }}
-                 onChange={(e) => setDestination(e.target.value)}
-               />
-             </div>
-             <div className="flex items-center gap-2.5 w-full md:w-auto">
-               <FontAwesomeIcon icon={faCalendarDays} className="text-lightgray" />
-               <span
-                 onClick={() => setOpenDate(!openDate)}
-                 className="text-[rgb(86,86,86)] cursor-pointer"
-               >{`${format(dates[0].startDate, "MM/dd/yyyy")} to ${format(
-                 dates[0].endDate,
-                 "MM/dd/yyyy"
-               )}`}</span>
-               {openDate && (
-                 <DateRange
-                   editableDateInputs={true}
-                   onChange={(item) => setDates([item.selection])}
-                   moveRangeOnFirstSelection={false}
-                   ranges={dates}
-                   className="date"
-                   minDate={new Date()}
-                 />
-               )}
-             </div>
-             <div className="flex items-center gap-2.5 w-full md:w-auto">
-               <FontAwesomeIcon icon={faPerson} className="text-lightgray" />
-               <span
-                 onClick={() => setOpenOptions(!openOptions)}
-                 className="text-[rgb(86,86,86)] cursor-pointer"
-               >{`${options.adult} adult · ${options.children} children · ${options.room} room`}</span>
-               {openOptions && (
-                 <div className="z-2 absolute bg-white text-black shadow-[0px_0px_10px_-5px_rgba(0,0,0,0.4)] rounded-[5px] top-[50px] shadow: 0px 0px 10px -5px rgba(0, 0, 0, 0.4)">
-                   <div className="w-full flex justify-between m-2.5">
-                     <span>Adult</span>
-                     <div className="flex items-center gap-2.5 text-xs text-black">
-                       <button
-                         disabled={options.adult <= 1}
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("adult", "d")}
-                       >
-                         -
-                       </button>
-                       <span>{options.adult}</span>
-                       <button
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("adult", "i")}
-                       >
-                         +
-                       </button>
-                     </div>
-                   </div>
-                   <div className="w-full flex justify-between m-2.5">
-                     <span>Children</span>
-                     <div className="flex items-center gap-2.5 text-xs text-black">
-                       <button
-                         disabled={options.children <= 0}
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("children", "d")}
-                       >
-                         -
-                       </button>
-                       <span>{options.children}</span>
-                       <button
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("children", "i")}
-                       >
-                         +
-                       </button>
-                     </div>
-                   </div>
-                   <div className="w-full flex justify-between m-2.5">
-                     <span className="optionText">Room</span>
-                     <div className="flex items-center gap-2.5 text-xs text-black">
-                       <button
-                         disabled={options.room <= 1}
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("room", "d")}
-                       >
-                         -
-                       </button>
-                       <span>{options.room}</span>
-                       <button
-                         className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
-                         onClick={() => handleOption("room", "i")}
-                       >
-                         +
-                       </button>
-                     </div>
-                   </div>
-                 </div>
-               )}
-             </div>
-             <div className="w-full md:w-auto">
-               <button
-                 className="w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                 onClick={handleSearch}
-               >
-                 Search
-               </button>
-             </div>
-           </div>
-           
+              <div className="space-y-2 px-8 md:relative md:left-[40%] h-auto bg-white flex flex-wrap gap-x-[5px] gap-y-0 mx-auto md:ml-[calc(50% - 40vw + 15px)] md:transform md:-translate-x-1/2 w-full max-w-screen-lg shadow-[-1px_5px_5px_0px_rgba(206,205,205,0.75)] px-2 py-3 rounded-[5px] border-none md:px-4 lg:px-6">
+                <div className="flex items-center gap-2.5 w-full md:w-auto">
+                  <input
+                    type="text"
+                    placeholder="Where are you going ?"
+                    className="border-[2px] border-solid border-gray-400 p-2 rounded-[10px] w-full md:w-auto"
+                    style={{ color: "black" }}
+                    onChange={(e) => setDestination(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-2.5 w-full md:w-auto">
+                  <input
+                    type="text"
+                    placeholder="Where To go ?"
+                    className="border-[2px] border-solid border-gray-400 p-2 rounded-[10px] w-full md:w-auto"
+                    style={{ color: "black" }}
+                    onChange={(e) => setDestination(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full md:w-auto ">
+                  <FontAwesomeIcon
+                    icon={faCalendarDays}
+                    className="text-lightgray"
+                  />
+                  <span
+                    onClick={() => setOpenDate(!openDate)}
+                    className="text-[rgb(86,86,86)] cursor-pointer"
+                  >{`${format(dates[0].startDate, "MM/dd/yyyy")} to ${format(
+                    dates[0].endDate,
+                    "MM/dd/yyyy"
+                  )}`}</span>
+
+                  {openDate && (
+                    <div ref={calendarRef}>
+                    <DateRange
+                      ref={calendarRef}
+                      editableDateInputs={true}
+                      onChange={(item) => setDates([item.selection])}
+                      moveRangeOnFirstSelection={false}
+                      ranges={dates}
+                      className="absolute top-[50px] left-[20%] z-index-2"
+                      minDate={new Date()}
+                    />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full md:w-auto">
+                  <FontAwesomeIcon icon={faPerson} className="text-lightgray" />
+                  <span
+                    onClick={() => setOpenOptions(!openOptions)}
+                    className="text-[rgb(86,86,86)] cursor-pointer"
+                  >{`${options.adult} adult · ${options.children} children · ${options.room} room`}</span>
+                  {openOptions && (
+                    <div className="z-2 absolute bg-white text-black shadow-[0px_0px_10px_-5px_rgba(0,0,0,0.4)] rounded-[5px] top-[50px] shadow: 0px 0px 10px -5px rgba(0, 0, 0, 0.4)">
+                      <div className="w-full flex justify-between m-2.5">
+                        <span>Adult</span>
+                        <div className="flex items-center gap-2.5 text-xs text-black">
+                          <button
+                            disabled={options.adult <= 1}
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("adult", "d")}
+                          >
+                            -
+                          </button>
+                          <span>{options.adult}</span>
+                          <button
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("adult", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-between m-2.5">
+                        <span>Children</span>
+                        <div className="flex items-center gap-2.5 text-xs text-black">
+                          <button
+                            disabled={options.children <= 0}
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("children", "d")}
+                          >
+                            -
+                          </button>
+                          <span>{options.children}</span>
+                          <button
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("children", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-between m-2.5">
+                        <span className="optionText">Room</span>
+                        <div className="flex items-center gap-2.5 text-xs text-black">
+                          <button
+                            disabled={options.room <= 1}
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("room", "d")}
+                          >
+                            -
+                          </button>
+                          <span>{options.room}</span>
+                          <button
+                            className="w-[30px] h-[30px] border text-[#0071c2] cursor-pointer bg-white border-solid border-[#0071c2]"
+                            onClick={() => handleOption("room", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full md:w-auto">
+                  <button
+                    className="w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* {stays && (

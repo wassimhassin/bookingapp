@@ -25,7 +25,6 @@ const ListFlights = () => {
 
   const formatTime = (dateTimeString) => {
     const timePart = dateTimeString.split("T")[1];
-    return timePart.split(":00.")[0];
   };
 
   return (
@@ -49,7 +48,7 @@ const ListFlights = () => {
                 className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 border-b "
                 key={flight._id}
               >
-                <div className="col-span-4 flex flex-col md:flex-row justify-around items-center cursor-pointer trasition hover:scale-105 hover:bg-gray-200 duration-300">
+                <div className="col-span-4 flex flex-col md:flex-row justify-around items-center cursor-pointer transition hover:scale-105 hover:bg-gray-200 duration-300">
                   <img
                     src={flight.airlineId.logoUrl}
                     alt="Airline logo"
@@ -57,7 +56,7 @@ const ListFlights = () => {
                   />
                   <div className="flex flex-col items-center md:items-center">
                     <strong style={fontstyleFlightList}>
-                      {formatTime(flight.departureTime)} AM
+                      {flight.departureTime} AM
                     </strong>
                     <strong style={fontstyleFlightListColor}>
                       {flight.originAirportId.code}
@@ -69,14 +68,15 @@ const ListFlights = () => {
                   </strong>
                   <div className="flex flex-col items-center md:items-center">
                     <strong style={fontstyleFlightList}>
-                      {formatTime(flight.arrivalTime)} AM
+                      {flight.arrivalTime} AM
                     </strong>
                     <strong style={fontstyleFlightListColor}>
                       {flight.destinationAirportId.code}
                     </strong>
                   </div>
                   <strong style={styleTime}>
-                    {(flight.duration / 60).toFixed(0)}h {flight.duration % 60}m
+                    {/*{(flight.duration / 60).toFixed(0)}h {flight.duration % 60}m*/}
+                    {flight.duration}
                   </strong>
                 </div>
 
