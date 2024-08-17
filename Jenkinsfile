@@ -4,7 +4,8 @@ pipeline {
         DOCKERHUB_CREDENTIALS = 'dockercred'
         KUBECONFIG_CREDENTIALS = 'kubecred'
         AWS_CREDENTIALS = 'awscred'
-    }
+        PUBLIC_KEY = credentials('awspubkey')
+            }
     stages {
         stage('Clone Repository') {
             steps {
@@ -30,15 +31,12 @@ pipeline {
         }
         stage('Terraform Apply') {
             steps {
-                script {
-                    withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
-                        dir('terraform') {
-                            sh 'terraform apply -auto-approve'
-                        }
-                    }
+                sh '''
+                echo "$PUBLIC_KEY" > /home/wassim/.ssh/key-pair.pub
+                terraform apply
+                '''
                 }
             }
-        }
         stage('Build and Package') {
             steps {
                 script {
