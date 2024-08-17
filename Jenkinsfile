@@ -4,7 +4,6 @@ pipeline {
         DOCKERHUB_CREDENTIALS = 'dockercred'
         KUBECONFIG_CREDENTIALS = 'kubecred'
         AWS_CREDENTIALS = 'awscred'
-        PUBLIC_KEY = credentials('awspubkey')
             }
     stages {
         stage('Clone Repository') {
@@ -12,17 +11,11 @@ pipeline {
                 git 'https://github.com/wassimhassin/bookingapp.git'
             }
         }
-        stage('List Files') {
-            steps {
-                sh 'ls -R'  // Lists all files and directories recursively
-            }
-        }
         stage('Terraform Init') {
             steps {
                 script {
                     withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
                         dir('terraform') {
-                            sh 'ls -l'  // Lists files in the terraform directory
                             sh 'terraform init'
                         }
                     }
@@ -31,12 +24,15 @@ pipeline {
         }
         stage('Terraform Apply') {
             steps {
-                sh '''
-                echo "$PUBLIC_KEY" > /home/wassim/.ssh/key-pair.pub
-                terraform apply
-                '''
+                script {
+                    withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
+                        dir('terraform') {
+                            sh 'terraform apply'
+                        }
+                    }
                 }
             }
+        }
         stage('Build and Package') {
             steps {
                 script {
