@@ -11,11 +11,19 @@ pipeline {
                 git 'https://github.com/wassimhassin/bookingapp.git'
             }
         }
+        stage('List Files') {
+            steps {
+                sh 'ls -R'  // Lists all files and directories recursively
+            }
+        }
         stage('Terraform Init') {
             steps {
                 script {
                     withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
-                        sh 'terraform init'
+                        dir('terraform') {
+                            sh 'ls -l'  // Lists files in the terraform directory
+                            sh 'terraform init'
+                        }
                     }
                 }
             }
@@ -24,7 +32,9 @@ pipeline {
             steps {
                 script {
                     withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
-                        sh 'terraform apply'
+                        dir('terraform') {
+                            sh 'terraform apply -auto-approve'
+                        }
                     }
                 }
             }
