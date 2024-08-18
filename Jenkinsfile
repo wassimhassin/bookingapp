@@ -3,34 +3,11 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = 'dockercred'
         KUBECONFIG_CREDENTIALS = 'kubecred'
-        AWS_CREDENTIALS = 'awscred'
-            }
+                    }
     stages {
         stage('Clone Repository') {
             steps {
                 git 'https://github.com/wassimhassin/bookingapp.git'
-            }
-        }
-        stage('Terraform Init') {
-            steps {
-                script {
-                    withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
-                        dir('terraform') {
-                            sh 'terraform init'
-                        }
-                    }
-                }
-            }
-        }
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    withAWS(credentials: AWS_CREDENTIALS, region: 'eu-west-3') {
-                        dir('terraform') {
-                            sh 'terraform apply'
-                        }
-                    }
-                }
             }
         }
         stage('Build and Package') {
