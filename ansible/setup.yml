@@ -1,80 +1,25 @@
 ---
-- name: Setup EC2 Instance
-  hosts: all
+- hosts: web
   become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3  # Use system Python for facts gathering
   tasks:
-    - name: Remove Previous Attempted Installation
-      command: rm -rf /usr/src/Python-3.9.13
-
-    - name: Install Prerequisites
+    - name: Update all packages
       yum:
-        name:
-          - gcc
-          - openssl-devel
-          - bzip2-devel
-          - libffi-devel
-          - wget
+        name: "*"
+        state: latest
+    - name: Install pip
+      yum:
+        name: python3-pip
         state: present
-
-    - name: Download Python source
-      get_url:
-        url: https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tgz
-        dest: /usr/src/Python-3.9.13.tgz
-
-    - name: Extract Python source
-      unarchive:
-        src: /usr/src/Python-3.9.13.tgz
-        dest: /usr/src/
-        remote_src: yes
-
-    - name: Configure Python
-      command: ./configure --with-openssl=/usr/include/openssl
-      args:
-        chdir: /usr/src/Python-3.9.13
-
-    - name: Build Python
-      command: make
-      args:
-        chdir: /usr/src/Python-3.9.13
-
-    - name: Install Python
-      command: make altinstall
-      args:
-        chdir: /usr/src/Python-3.9.13
-      notify:
-        - Check Python Installation
-
-    - name: Verify Python 3.9 Installation
-      command: /usr/local/bin/python3.9 --version
-      register: python_version
-      ignore_errors: yes
-
-    - name: Debug Python Installation
-      debug:
-        msg: "Python 3.9 Installation Path: {{ python_version.stderr }}"
-      when: python_version.failed
-
-    - name: Update PATH
-      lineinfile:
-        path: ~/.bashrc
-        line: 'export PATH="/usr/local/bin:$PATH"'
-        create: yes
-
-    - name: Reload bashrc
-      command: source ~/.bashrc
-      changed_when: false
-
-    - name: Install pip for Python 3.9
-      command: /usr/local/bin/python3.9 -m ensurepip
-
-    - name: Upgrade pip for Python 3.9
-      command: /usr/local/bin/pip3.9 install --upgrade pip
-
-    - name: Install/Upgrade requests library for Python 3.9
-      command: /usr/local/bin/pip3.9 install requests
-
+    - name: Install specific versions of urllib3 and requests
+      pip:
+        name:
+          - "urllib3<2"
+          - "requests<2.28"
+        state: present
+    - name: Install the 'requests' library
+      pip:
+        name: requests
+        state: present
     - name: Create MongoDB repository
       copy:
         content: |
@@ -124,10 +69,7 @@
       command: docker rm -f booking-app
       ignore_errors: yes
 
-    - name: Docker Hub login
-      command: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
-      ignore_errors: yes
-
+    
     - name: Pull Docker image from Docker Hub
       docker_image:
         name: wassimhassin/booking
@@ -150,6 +92,76 @@
     - name: Display logs of 'booking-app'
       debug:
         msg: "{{ container_logs.stdout }}"
+    
+    # Install Git if not already installed
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    # Clone the Neofetch repository from GitHub
+    - name: Clone Neofetch repository
+      git:
+        repo: https://github.com/dylanaraps/neofetch.git
+        dest: /tmp/neofetch
+        force: yes
+
+     # Copy the Neofetch script to /usr/bin
+    - name: Copy Neofetch script to /usr/bin
+      copy:
+        src: /tmp/neofetch/neofetch
+        dest: /usr/bin/neofetch
+        mode: '0755'
+        remote_src: yes
+
+# Pull and run Elasticsearch container
+    - name: Pull Elasticsearch Docker image
+      docker_image:
+        name: docker.elastic.co/elasticsearch/elasticsearch
+        tag: 8.0.0
+        source: pull
+
+    - name: Run Elasticsearch container
+      docker_container:
+        name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+        state: started
+        published_ports:
+          - "9200:9200"
+        env:
+          discovery.type: single-node
+        volumes:
+          - "es_data:/usr/share/elasticsearch/data"
+
+    # Pull and run Logstash container
+    - name: Pull Logstash Docker image
+      docker_image:
+        name: docker.elastic.co/logstash/logstash
+        tag: 8.0.0
+        source: pull
+
+    - name: Run Logstash container
+      docker_container:
+        name: logstash
+        image: docker.elastic.co/logstash/logstash:8.0.0
+        state: started
+        published_ports:
+          - "5044:5044"
+
+    # Pull and run Kibana container
+    - name: Pull Kibana Docker image
+      docker_image:
+        name: docker.elastic.co/kibana/kibana
+        tag: 8.0.0
+        source: pull
+
+    - name: Run Kibana container
+      docker_container:
+        name: kibana
+        image: docker.elastic.co/kibana/kibana:8.0.0
+        state: started
+        published_ports:
+          - "5601:5601"
 
   handlers:
     - name: Check Python Installation

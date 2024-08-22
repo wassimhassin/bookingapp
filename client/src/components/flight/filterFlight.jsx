@@ -21,20 +21,19 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const FilterFlight = () => {
   var minDistance = 10;
 
-  const dispatch = useDispatch()
-  const {data, loading, error} = useSelector((state)=>state.flights)
-
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.flights);
 
   const [value, setValue] = useState("");
   const [valueDuration, setValueDuration] = useState("");
   const [valueDuration2, setValueDuration2] = useState([450, 600]);
 
-  useEffect(()=>{
-    dispatch(fetchFlights())
-    if(error){
-      dispatch(error)
+  useEffect(() => {
+    dispatch(fetchFlights());
+    if (error) {
+      dispatch(error);
     }
-  },[dispatch])
+  }, [dispatch]);
 
   function valuetext(value) {
     return `${value}`;
@@ -63,10 +62,9 @@ const FilterFlight = () => {
     }
   };
 
-
   return (
-    <div>
-      <Accordion defaultExpanded>
+    <div className="flex lg:flex-col gap-4">
+      <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"
@@ -89,7 +87,7 @@ const FilterFlight = () => {
               step={100}
               marks
               min={data[0]?.price}
-              max={ data[data.length - 1]?.price}
+              max={data[data.length - 1]?.price}
               value={value}
               onChange={handleChange}
             />
@@ -97,114 +95,113 @@ const FilterFlight = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion defaultExpanded>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1-content"
-          id="panel1-header"
+        <Accordion  
+        className="md:opacity-1 lg:opacity-1 "
         >
-          <strong>Duration</strong>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Flight leg
-            <div className="flex justify-between">
-              <strong>3h 30m</strong>
-              <strong>{DurationTime(valueDuration)}</strong>
-            </div>
-            <Slider
-              aria-label="Duration"
-              defaultValue={450}
-              getAriaValueText={valuetext}
-              valueLabelDisplay="auto"
-              step={30}
-              marks
-              min={450}
-              max={5000}
-              value={valueDuration}
-              onChange={handleChangeDuration}
-            />
-          </Typography>
-        </AccordionDetails>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <strong>Duration</strong>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Flight leg
+              <div className="flex justify-between">
+                <strong>3h 30m</strong>
+                <strong>{DurationTime(valueDuration)}</strong>
+              </div>
+              <Slider
+                aria-label="Duration"
+                defaultValue={450}
+                getAriaValueText={valuetext}
+                valueLabelDisplay="auto"
+                step={30}
+                marks
+                min={450}
+                max={5000}
+                value={valueDuration}
+                onChange={handleChangeDuration}
+              />
+            </Typography>
+          </AccordionDetails>
 
-        <AccordionDetails>
-          <Typography>
-            Layover
-            <div className="flex justify-between">
-              <strong>{console.log(data,"-----")}</strong>
-              <strong>{DurationTime(valueDuration2[1])}</strong>
-            </div>
-            <Slider
-              getAriaLabel={() => "Minimum distance"}
-              value={valueDuration2}
-              onChange={handleChange1}
-              valueLabelDisplay="auto"
-              getAriaValueText={valuetext}
-              disableSwap
-              min={450}
-              max={3000}
-              step={30}
-            />
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+          <AccordionDetails>
+            <Typography>
+              Layover
+              <div className="flex justify-between">
+                <strong>{console.log(data, "-----")}</strong>
+                <strong>{DurationTime(valueDuration2[1])}</strong>
+              </div>
+              <Slider
+                getAriaLabel={() => "Minimum distance"}
+                value={valueDuration2}
+                onChange={handleChange1}
+                valueLabelDisplay="auto"
+                getAriaValueText={valuetext}
+                disableSwap
+                min={450}
+                max={3000}
+                step={30}
+              />
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
 
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2-content"
-          id="panel2-header"
+        {/* <Accordion 
+        className="md:opacity-1 lg:opacity-1 "
         >
-          <strong>Airlines</strong>
-        </AccordionSummary>
-        <AccordionDetails>
-          {data.map((flight, index) => (
-            <React.Fragment key={index}>
-              <Typography className="flex items-center gap-1">
-                <Checkbox {...label} defaultChecked />
-                <span
-                  style={{
-                    textTransform: "capitalize",
-                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-                  }}
-                >
-                  {flight.airlineId.name}
-                </span>
-              </Typography>
-              {index < data.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
-        </AccordionDetails>
-      </Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <strong>Airlines</strong>
+          </AccordionSummary>
+          <AccordionDetails>
+            {data.map((flight, index) => (
+              <React.Fragment key={index}>
+                <Typography className="flex items-center gap-1">
+                  <Checkbox {...label} defaultChecked />
+                  <span
+                    style={{
+                      textTransform: "capitalize",
+                      fontFamily:
+                        "Helvetica Neue, Helvetica, Arial, sans-serif",
+                    }}
+                  >
+                    {flight.airlineId.name}
+                  </span>
+                </Typography>
+                {index < data.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </AccordionDetails>
+        </Accordion> */}
 
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2-content"
-          id="panel2-header"
-        >
-          <strong>AirPorts</strong>
-        </AccordionSummary>
-        <AccordionDetails>
-          {data.map((flight, index) => (
-            <React.Fragment key={index}>
-              <Typography className="flex items-center gap-1">
-                <Checkbox {...label} defaultChecked />
-                <span
-                  style={styles}
-                >
-                  {flight.originAirportId.name}
-                </span>
-              </Typography>
-              {index < data.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
-        </AccordionDetails>
-      </Accordion>
+        {/* <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <strong>AirPorts</strong>
+          </AccordionSummary>
+          <AccordionDetails>
+            {data.map((flight, index) => (
+              <React.Fragment key={index}>
+                <Typography className="flex items-center gap-1">
+                  <Checkbox {...label} defaultChecked />
+                  <span style={styles}>{flight.originAirportId.name}</span>
+                </Typography>
+                {index < data.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </AccordionDetails>
+        </Accordion> */}
     </div>
   );
 };
 
 export default FilterFlight;
-
-

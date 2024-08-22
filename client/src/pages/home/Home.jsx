@@ -11,6 +11,7 @@ import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
 import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import Offer from "./../../components/offer/offer";
+import FilterFlight from "../../components/flight/filterFlight";
 
 const Home = () => {
   const { t } = useTranslation();

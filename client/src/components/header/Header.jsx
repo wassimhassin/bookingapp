@@ -19,6 +19,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import Icon_navigation from "../icon_navigation";
+import Search from "../flight/search";
 
 const Header = ({ type }) => {
   const { t } = useTranslation();
@@ -139,53 +141,10 @@ const Header = ({ type }) => {
         </motion.div>
 
         <div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex justify-center items-center gap-3"
-          >
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center gap-2.5 cursor-pointer border bg-[white] text-[black] font-semibold text-[13px] p-[5px] rounded-[15px] border-solid border-[white]  
-            text-[#048a98] font-medium text-[13px] p-[5px] rounded-[15px] border-2 border-solid border-[gray]"
-              onClick={StaysSearch}
-            >
-              <FontAwesomeIcon icon={faBed} />
-              <span>Stays</span>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className=" items-center gap-2.5 text-[14px] p-[6px] rounded-[20px] cursor-pointer"
-              onClick={FlightSearch}
-            >
-              <Link to="http://localhost:3000/flight">
-                <FontAwesomeIcon icon={faPlane} className="px-1" />
-                <span>Flights</span>
-              </Link>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className=" md:text-[15px] md:p-[7px] md:rounded-[25px] cursor-pointer"
-            >
-              <FontAwesomeIcon className="px-1" icon={faCar} />
-              <span>Car</span>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center text-[15px] p-[7px] rounded-[25px] cursor-pointer"
-            >
-              <FontAwesomeIcon className="px-1" icon={faTaxi} />
-              <span>Airport taxis</span>
-            </motion.div>
-          </motion.div>
+          <Icon_navigation />
         </div>
-        {type !== "list" && (
+
+        {/* {type !== "list" && (
           <>
             {flights && (
               <div className="space-y-2 px-8 md:relative md:left-[40%] h-auto bg-white flex flex-wrap gap-x-[5px] gap-y-0 mx-auto md:ml-[calc(50% - 40vw + 15px)] md:transform md:-translate-x-1/2 w-full max-w-screen-lg shadow-[-1px_5px_5px_0px_rgba(206,205,205,0.75)] px-2 py-3 rounded-[5px] border-none md:px-4 lg:px-6">
@@ -223,15 +182,15 @@ const Header = ({ type }) => {
 
                   {openDate && (
                     <div ref={calendarRef}>
-                    <DateRange
-                      ref={calendarRef}
-                      editableDateInputs={true}
-                      onChange={(item) => setDates([item.selection])}
-                      moveRangeOnFirstSelection={false}
-                      ranges={dates}
-                      className="absolute top-[50px] left-[20%] z-index-2"
-                      minDate={new Date()}
-                    />
+                      <DateRange
+                        ref={calendarRef}
+                        editableDateInputs={true}
+                        onChange={(item) => setDates([item.selection])}
+                        moveRangeOnFirstSelection={false}
+                        ranges={dates}
+                        className="absolute top-[50px] left-[20%] z-index-2"
+                        minDate={new Date()}
+                      />
                     </div>
                   )}
                 </div>
@@ -314,58 +273,10 @@ const Header = ({ type }) => {
                 </div>
               </div>
             )}
-
-            {/* {stays && (
-              <div className="h-auto bg-[white] grid grid-cols-[repeat(5,1fr)] grid-rows-[repeat(2,1fr)] gap-x-[5px] gap-y-0 absolute bottom-[-25px] w-full max-w-screen-lg shadow-[-1px_5px_5px_0px_rgba(206,205,205,0.75)] px-0 py-3 rounded-[5px] border-[none]">
-                <div className="md:flex md:items-center md:gap-2.5">
-                  <FontAwesomeIcon icon={faBed} className="text-[lightgray]" />
-                  <input
-                    type="text"
-                    placeholder="Where are you going?"
-                    className="headerSearchInput"
-                    style={{ color: "black" }}
-                    onChange={(e) => setDestination(e.target.value)}
-                  />
-                </div>
-                <div className="md:flex md:items-center md:gap-2.5">
-                  <FontAwesomeIcon
-                    icon={faCalendarDays}
-                    className="text-[lightgray]"
-                  />
-                  <span
-                    onClick={() => setOpenDate(!openDate)}
-                    className="text-[rgb(86,86,86)] cursor-pointer"
-                  >{`${format(dates[0].startDate, "MM/dd/yyyy")} to ${format(
-                    dates[0].endDate,
-                    "MM/dd/yyyy"
-                  )}`}</span>
-                  {openDate && (
-                    <DateRange
-                      editableDateInputs={true}
-                      onChange={(item) => setDates([item.selection])}
-                      moveRangeOnFirstSelection={false}
-                      ranges={dates}
-                      className="date"
-                      minDate={new Date()}
-                    />
-                  )}
-                </div>
-
-                <div className="">
-                  <button
-                    className=" w-full 
-                text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center  
-                "
-                    onClick={handleSearch}
-                  >
-                    Search
-                  </button>
-                </div>
-                <div></div>
-              </div>
-            )} */}
           </>
-        )}
+        )} */}
+
+        <Search/>
       </div>
     </div>
   );

@@ -84,8 +84,7 @@ resource "aws_instance" "booking_app" {
         docker rm -f booking-app
     fi
 
-    # Docker Hub login
-    echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+
     
     # Pull the latest image from Docker Hub
     echo "Attempting to pull Docker image..."
